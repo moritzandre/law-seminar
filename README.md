@@ -53,7 +53,7 @@ eintragen.
 | Block | Modul                              | Status            |
 | ----- | ---------------------------------- | ----------------- |
 | 1     | **Live-Abstimmung** (`poll`)       | **vollständig**   |
-| 1     | Prompt-Logger                      | Platzhalter (TODO)|
+| 1     | **Prompt-Logger** (`poll`)         | **vollständig**   |
 | 1     | Architektur-Karte: Wo ist die Wahrheit? | Platzhalter (TODO)|
 | 2     | Schätz-Klammer                     | Platzhalter (TODO)|
 | 2     | Daten-Treppe                       | Platzhalter (TODO)|
