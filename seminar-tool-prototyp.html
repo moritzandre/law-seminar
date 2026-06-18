@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seminar-Tool · Wo ist die Wahrheit?</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#1a212b; --panel2:#222c38; --ink:#e8edf2; --muted:#9aa7b4;
+    --line:#33414f; --accent:#c9a227; --green:#3f9d6b; --red:#c4574f; --blue:#4a86c5;
+    --radius:14px; --maxw:980px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;padding:24px 16px}
+  .wrap{max-width:var(--maxw);margin:0 auto}
+  header{text-align:center;margin-bottom:6px}
+  h1{font-size:1.5rem;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:.95rem;margin:0 0 18px}
+  .modes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+  .modes button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);
+    padding:8px 14px;border-radius:999px;cursor:pointer;font-size:.9rem}
+  .modes button.active{background:var(--accent);color:#1a1500;border-color:var(--accent);font-weight:600}
+  .prompt{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:16px;font-size:1rem}
+  .prompt b{color:var(--accent)}
+  .pipe{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:stretch;margin-bottom:8px}
+  .station{position:relative;flex:1 1 110px;min-width:110px;max-width:140px;background:var(--panel2);
+    border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;
+    transition:transform .08s ease,border-color .15s ease,background .15s ease}
+  .station:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .station .ico{font-size:1.4rem;display:block;margin-bottom:6px}
+  .station .nm{font-size:.82rem;font-weight:600}
+  .station.checked{border-color:var(--blue)}
+  .station.checked::after{content:"✓";position:absolute;top:6px;right:8px;color:var(--blue);font-size:.8rem}
+  .arrow{align-self:center;color:var(--muted);font-size:1.1rem}
+  .detail{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;margin-top:16px;min-height:120px}
+  .detail h3{margin:0 0 10px;font-size:1.15rem}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .card{flex:1 1 240px;border-radius:10px;padding:12px 14px;font-size:.95rem}
+  .card.is{background:rgba(74,134,197,.12);border:1px solid rgba(74,134,197,.4)}
+  .card.isnt{background:rgba(196,87,79,.12);border:1px solid rgba(196,87,79,.4)}
+  .card .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+  .placeholder{color:var(--muted)}
+  .footerbar{margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .counter{color:var(--muted);font-size:.85rem}
+  .reveal{background:var(--accent);color:#1a1500;border:none;padding:10px 18px;border-radius:10px;
+    font-weight:600;cursor:pointer;font-size:.95rem}
+  .reveal:disabled{opacity:.4;cursor:not-allowed}
+  .verdict{margin-top:16px;background:linear-gradient(180deg,rgba(201,162,39,.14),rgba(201,162,39,.04));
+    border:1px solid var(--accent);border-radius:var(--radius);padding:18px;display:none}
+  .verdict.show{display:block}
+  .verdict h3{margin:0 0 8px;color:var(--accent)}
+  .note{color:var(--muted);font-size:.78rem;text-align:center;margin-top:22px}
+  @media(max-width:560px){.station{min-width:46%}.arrow{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Der Maschinenraum: Wo ist die Wahrheit?</h1>
+    <p class="sub">Interaktive Architekturkarte zu Block 2 · fiktives Schulungsmaterial</p>
+  </header>
+
+  <div class="modes">
+    <button id="m-explore" class="active">Erkundungsmodus</button>
+    <button id="m-truth">Wahrheit suchen</button>
+  </div>
+
+  <div class="prompt" id="prompt"></div>
+
+  <div class="pipe" id="pipe"></div>
+
+  <div class="detail" id="detail">
+    <p class="placeholder">Klicken Sie auf eine Station, um zu sehen, was dort geschieht.</p>
+  </div>
+
+  <div class="footerbar">
+    <span class="counter" id="counter"></span>
+    <button class="reveal" id="reveal" disabled>Auflösung anzeigen</button>
+  </div>
+
+  <div class="verdict" id="verdict">
+    <h3>Der Befund</h3>
+    <p>Sie haben jede Station geöffnet. In keiner wird über juristische <b>Wahrheit</b>, <b>Aktualität</b>,
+    <b>Quellenbindung</b> oder <b>Verantwortung</b> entschieden. Diese sind in der Architektur keine Bauteile.</p>
+    <p style="margin-bottom:0"><b>Konsequenz:</b> Was die Maschine nicht enthält, muss von außen organisiert werden —
+    durch Quellen, Prüfung, Prozesse und Verantwortliche. Genau das ist das Thema des Nachmittags.</p>
+  </div>
+
+  <p class="note">Offline-Prototyp · Teil des Seminar-Tools · keine Datenübertragung, läuft vollständig im Browser.</p>
+</div>
+
+<script>
+const stations = [
+  { id:"tok", ico:"✂️", nm:"Tokenisierung",
+    is:"Text wird in Tokens zerlegt — Wörter, Wortteile, Zeichen. Rein nach Häufigkeitsstatistik.",
+    isnt:"Keine Bedeutung, keine Norm. „§ 488 Abs. 3 BGB“ ist hier nur eine Folge von Bruchstücken." },
+  { id:"emb", ico:"🗺️", nm:"Embedding",
+    is:"Jedes Token wird zu einem Vektor. Ähnlich verwendete Tokens liegen nah beieinander.",
+    isnt:"Nähe heißt ähnliche Verwendung — nicht dogmatische Gleichheit. Besitz und Eigentum sind hier Nachbarn." },
+  { id:"pos", ico:"🔢", nm:"Position",
+    is:"Jedem Token wird seine Reihenfolge mitgegeben, damit Stellung im Satz zählt.",
+    isnt:"Keine Prüfung, ob die Reihenfolge juristisch eine Prüfungsfolge ergibt." },
+  { id:"att", ico:"🔍", nm:"Attention",
+    is:"Für jedes Tokenpaar wird ein Gewicht berechnet: wie stark der Kontext einbezogen wird.",
+    isnt:"Kontextgewicht ist nicht Tatbestandsrelevanz. Attention ist keine Relevanzprüfung." },
+  { id:"ff", ico:"⚙️", nm:"Feed Forward",
+    is:"Jede Tokenrepräsentation läuft durch ein kleines Netz — Weiterverarbeitung nach dem Gewichten.",
+    isnt:"Kein Abgleich mit Recht, Quellen oder Realität." },
+  { id:"dec", ico:"📊", nm:"Decoding",
+    is:"Die interne Repräsentation wird in eine Wahrscheinlichkeitsverteilung über nächste Tokens übersetzt.",
+    isnt:"Am Ende steht keine Antwort, sondern eine Verteilung. Keine Bewertung von Korrektheit." },
+  { id:"smp", ico:"🎲", nm:"Sampling",
+    is:"Aus der Verteilung wird ein Token gezogen. Temperatur und Top-k steuern die Streuung.",
+    isnt:"Die Auswahl folgt Wahrscheinlichkeit, nicht Wahrheit. Daher variieren Antworten." },
+];
+
+let mode = "explore";
+const checked = new Set();
+const pipe = document.getElementById("pipe");
+const detail = document.getElementById("detail");
+const counter = document.getElementById("counter");
+const promptEl = document.getElementById("prompt");
+const revealBtn = document.getElementById("reveal");
+const verdict = document.getElementById("verdict");
+
+function renderPipe(){
+  pipe.innerHTML = "";
+  stations.forEach((s,i)=>{
+    const el = document.createElement("div");
+    el.className = "station" + (checked.has(s.id) ? " checked":"");
+    el.innerHTML = `<span class="ico">${s.ico}</span><span class="nm">${s.nm}</span>`;
+    el.addEventListener("click",()=>openStation(s));
+    pipe.appendChild(el);
+    if(i<stations.length-1){
+      const a=document.createElement("div");a.className="arrow";a.textContent="→";pipe.appendChild(a);
+    }
+  });
+}
+
+function openStation(s){
+  checked.add(s.id);
+  if(mode==="truth"){
+    detail.innerHTML = `<h3>${s.ico} ${s.nm}</h3>
+      <div class="row">
+        <div class="card isnt"><div class="lbl">Wahrheit gesucht?</div>
+        Hier wird <b>gerechnet, nicht geprüft</b>. Kein Modul für juristische Wahrheit.</div>
+        <div class="card is"><div class="lbl">Was hier wirklich passiert</div>${s.is}</div>
+      </div>`;
+  } else {
+    detail.innerHTML = `<h3>${s.ico} ${s.nm}</h3>
+      <div class="row">
+        <div class="card is"><div class="lbl">Hier passiert</div>${s.is}</div>
+        <div class="card isnt"><div class="lbl">Hier passiert nicht</div>${s.isnt}</div>
+      </div>`;
+  }
+  renderPipe();
+  updateProgress();
+}
+
+function updateProgress(){
+  counter.textContent = `${checked.size} von ${stations.length} Stationen geöffnet`;
+  revealBtn.disabled = checked.size < stations.length || mode!=="truth";
+}
+
+function setMode(m){
+  mode = m;
+  document.getElementById("m-explore").classList.toggle("active",m==="explore");
+  document.getElementById("m-truth").classList.toggle("active",m==="truth");
+  verdict.classList.remove("show");
+  checked.clear();
+  renderPipe();
+  detail.innerHTML = m==="truth"
+    ? `<p class="placeholder">Suchauftrag aktiv — klicken Sie jede Station an.</p>`
+    : `<p class="placeholder">Klicken Sie auf eine Station, um zu sehen, was dort geschieht.</p>`;
+  promptEl.innerHTML = m==="truth"
+    ? `<b>Aufgabe:</b> Finden Sie die Station, in der über <b>juristische Wahrheit</b> entschieden wird. Klicken Sie sich durch.`
+    : `<b>Erkundung:</b> Öffnen Sie die Stationen und sehen Sie, was jede leistet — und was sie ausdrücklich nicht leistet.`;
+  updateProgress();
+}
+
+revealBtn.addEventListener("click",()=>{ verdict.classList.add("show"); verdict.scrollIntoView({behavior:"smooth"}); });
+document.getElementById("m-explore").addEventListener("click",()=>setMode("explore"));
+document.getElementById("m-truth").addEventListener("click",()=>setMode("truth"));
+
+setMode("explore");
+</script>
+</body>
+</html>
