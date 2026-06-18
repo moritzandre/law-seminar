@@ -15,6 +15,10 @@ import type {
   PollAggregate,
   PollConfig,
   PollSubmission,
+  PromptLogAggregate,
+  PromptLogConfig,
+  PromptLogSubmission,
+  PromptLogTally,
 } from './types';
 
 /**
@@ -39,6 +43,12 @@ export interface ModuleLogic<
    * Presentation-Module liefern hier null (keine Aggregation).
    */
   aggregate(submissions: Submission[], config: Config): Aggregate;
+  /**
+   * Optionale, nicht-sensible Live-Auswertung waehrend der Sammelphase
+   * (collecting). Darf NUR Zahlen/Metadaten liefern, niemals Inhalte - sie geht
+   * vor der Freigabe an den Trainer. Module ohne Live-Auswertung lassen dies weg.
+   */
+  tally?(submissions: Submission[], config: Config): unknown;
 }
 
 /* ---------------------------------------------------------------------------
@@ -83,6 +93,42 @@ export const livePollLogic: ModuleLogic<
 };
 
 /* ---------------------------------------------------------------------------
+ * Modul: Prompt-Logger (Bruecke Block 1 <-> 4)
+ * ------------------------------------------------------------------------- */
+
+/** Prueft, ob eine Einsendung eine nicht-leere Fundstelle nennt. */
+function hasCitation(s: PromptLogSubmission): boolean {
+  return (s.citation ?? '').trim().length > 0;
+}
+
+export const promptLoggerLogic: ModuleLogic<
+  PromptLogConfig,
+  PromptLogSubmission,
+  PromptLogAggregate
+> = {
+  id: 'prompt-logger',
+  title: 'Prompt-Logger',
+  block: 1,
+  kind: 'poll',
+  defaultConfig: {
+    instruction:
+      'Notiere deinen genauen Prompt, das Ergebnis der Antwort und - falls genannt - die zitierte Fundstelle (Norm oder Urteil).',
+  },
+  aggregate(submissions) {
+    return {
+      total: submissions.length,
+      withCitation: submissions.filter(hasCitation).length,
+      // Neueste zuerst: der Server liefert in Einsende-Reihenfolge.
+      entries: [...submissions].reverse(),
+    };
+  },
+  tally(submissions): PromptLogTally {
+    // Nur eine Zahl - keine Inhalte - waehrend der Sammelphase.
+    return { withCitation: submissions.filter(hasCitation).length };
+  },
+};
+
+/* ---------------------------------------------------------------------------
  * Platzhalter-Module (nur registriert, Logik folgt spaeter -> TODO)
  *
  * Jeder Platzhalter ist bereits korrekt typisiert und in der Registry sichtbar,
@@ -110,8 +156,6 @@ function placeholder(
 }
 
 export const placeholderLogic: ModuleLogic[] = [
-  // TODO: Prompt-Logger - sammelt eingegebene Prompts und gruppiert sie.
-  placeholder('prompt-logger', 'Prompt-Logger', 1, 'poll'),
   // TODO: Inhalt/Interaktion aus seminar-tool-prototyp.html uebernehmen.
   placeholder(
     'architecture-map',
@@ -138,6 +182,7 @@ export const placeholderLogic: ModuleLogic[] = [
  */
 export const moduleLogicRegistry: ModuleLogic[] = [
   livePollLogic,
+  promptLoggerLogic,
   ...placeholderLogic,
 ];
 

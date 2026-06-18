@@ -49,12 +49,21 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
 
 /** Socket-Room-Name fuer alle Mitglieder eines Seminar-Raums. */
 const channel = (code: string) => `room:${code}`;
-/** Sendet die aktuelle Einsendungszahl an den Trainer. */
+/**
+ * Sendet die aktuelle Einsendungszahl an den Trainer - plus eine optionale,
+ * nicht-sensible Live-Auswertung (tally) des aktiven Moduls. Niemals Inhalte.
+ */
 function emitSubmissionCount(roomCode: string): void {
   const room = getRoom(roomCode);
   if (!room?.active) return;
+  const logic = getModuleLogic(room.active.moduleId);
+  const subs = [...room.active.submissions.values()];
+  const tally = logic?.tally
+    ? logic.tally(subs, room.active.config)
+    : undefined;
   io.to(room.trainerSocketId).emit('submission:count', {
     count: room.active.submissions.size,
+    tally,
   });
 }
 

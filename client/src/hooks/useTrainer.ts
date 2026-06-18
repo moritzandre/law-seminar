@@ -21,6 +21,8 @@ export interface TrainerRoom {
   participantCount: number;
   module: TrainerModuleState | null;
   submissionCount: number;
+  /** Nicht-sensible Live-Auswertung waehrend collecting (modul-spezifisch). */
+  tally: unknown;
   aggregate: unknown;
   createRoom: () => void;
   startModule: (moduleId: string, config: unknown) => void;
@@ -33,6 +35,7 @@ export function useTrainer(): TrainerRoom {
   const [participantCount, setParticipantCount] = useState(0);
   const [module, setModule] = useState<TrainerModuleState | null>(null);
   const [submissionCount, setSubmissionCount] = useState(0);
+  const [tally, setTally] = useState<unknown>(null);
   const [aggregate, setAggregate] = useState<unknown>(null);
 
   useEffect(() => {
@@ -54,9 +57,11 @@ export function useTrainer(): TrainerRoom {
       });
       setAggregate(null);
       setSubmissionCount(0);
+      setTally(null);
     }
-    function onCount(payload: { count: number }) {
+    function onCount(payload: { count: number; tally?: unknown }) {
       setSubmissionCount(payload.count);
+      setTally(payload.tally ?? null);
     }
     function onPhase(payload: { phase: 'revealed'; aggregate: unknown }) {
       setModule((m) => (m ? { ...m, phase: payload.phase } : m));
@@ -66,6 +71,7 @@ export function useTrainer(): TrainerRoom {
       setModule(null);
       setAggregate(null);
       setSubmissionCount(0);
+      setTally(null);
     }
 
     socket.on('room:created', onCreated);
@@ -103,6 +109,7 @@ export function useTrainer(): TrainerRoom {
     participantCount,
     module,
     submissionCount,
+    tally,
     aggregate,
     createRoom,
     startModule,

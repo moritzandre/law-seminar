@@ -56,6 +56,43 @@ export interface PollAggregate {
 }
 
 /* ---------------------------------------------------------------------------
+ * Modul: "Prompt-Logger" (kind: poll) - Bruecke Block 1 <-> 4
+ * ------------------------------------------------------------------------- */
+
+export interface PromptLogConfig {
+  /** Optionaler Arbeitsauftrag, der den Teilnehmenden angezeigt wird. */
+  instruction: string;
+}
+
+/** Was eine teilnehmende Person sendet. */
+export interface PromptLogSubmission {
+  /** Der genaue Prompt (mehrzeilig). */
+  prompt: string;
+  /** Ergebnis der KI-Antwort (kurz). */
+  result: string;
+  /** Genannte Fundstelle (Norm/Urteil), optional. */
+  citation?: string;
+}
+
+export type PromptLogEntry = PromptLogSubmission;
+
+export interface PromptLogAggregate {
+  total: number;
+  /** Anzahl Einsendungen mit genannter Fundstelle. */
+  withCitation: number;
+  /** Alle Einsendungen, neueste zuerst. */
+  entries: PromptLogEntry[];
+}
+
+/**
+ * Nicht-sensible Live-Zahlen waehrend der Sammelphase (nur an den Trainer).
+ * Enthaelt bewusst KEINE Inhalte - die werden erst nach Freigabe sichtbar.
+ */
+export interface PromptLogTally {
+  withCitation: number;
+}
+
+/* ---------------------------------------------------------------------------
  * Socket.IO Event-Vertraege
  * ------------------------------------------------------------------------- */
 
@@ -84,8 +121,12 @@ export interface ServerToClientEvents {
   'phase:updated': (payload: { phase: 'revealed'; aggregate: unknown }) => void;
   /** Modul wurde zurueckgesetzt (zurueck zu idle). */
   'module:reset': () => void;
-  /** Nur an den Trainer: aktuelle Anzahl eingegangener Einsendungen. */
-  'submission:count': (payload: { count: number }) => void;
+  /**
+   * Nur an den Trainer: aktuelle Anzahl eingegangener Einsendungen, plus eine
+   * optionale, nicht-sensible Live-Auswertung (tally) - z. B. wie viele eine
+   * Fundstelle enthalten. Niemals Inhalte (frozen until reveal).
+   */
+  'submission:count': (payload: { count: number; tally?: unknown }) => void;
   /** Generischer Fehlerkanal. */
   error: (payload: { message: string }) => void;
 }

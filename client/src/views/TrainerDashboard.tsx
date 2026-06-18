@@ -19,7 +19,7 @@ import { PollSetup } from './PollSetup';
 import './dashboard.css';
 
 /** Modul-IDs, die bereits vollstaendig implementiert sind. */
-const READY_MODULE_IDS = new Set(['live-poll']);
+const READY_MODULE_IDS = new Set(['live-poll', 'prompt-logger']);
 
 export function TrainerDashboard() {
   const room = useTrainer();
@@ -99,6 +99,7 @@ export function TrainerDashboard() {
         {mode === 'setup' && draftModuleId && (
           <SetupArea
             moduleId={draftModuleId}
+            ready={READY_MODULE_IDS.has(draftModuleId)}
             onStart={(config) => {
               room.startModule(draftModuleId, config);
               setDraftModuleId(null);
@@ -113,6 +114,7 @@ export function TrainerDashboard() {
             config={room.module.config}
             phase={room.module.phase}
             aggregate={room.aggregate}
+            tally={room.tally}
             submissionCount={room.submissionCount}
             participantCount={room.participantCount}
             onReveal={room.reveal}
@@ -179,42 +181,51 @@ function ModulePicker({
 
 function SetupArea({
   moduleId,
+  ready,
   onStart,
   onCancel,
 }: {
   moduleId: string;
+  ready: boolean;
   onStart: (config: unknown) => void;
   onCancel: () => void;
 }) {
   const def = getModule(moduleId);
   if (!def) return null;
 
-  // Modul-spezifischer Editor fuer die Live-Abstimmung; sonst Start mit Default.
-  return (
-    <Card panel>
-      {moduleId === 'live-poll' ? (
+  // Modul-spezifischer Editor fuer die Live-Abstimmung.
+  if (moduleId === 'live-poll') {
+    return (
+      <Card panel>
         <PollSetup
           initialConfig={def.defaultConfig as PollConfig}
           onStart={(config) => onStart(config)}
           onCancel={onCancel}
         />
-      ) : (
-        <div className="stack stack-4">
-          <h2 className="h2">{def.title}</h2>
-          <p className="muted">
-            Dieses Modul ist noch ein Platzhalter (TODO). Es kann zu
-            Demonstrationszwecken mit Standardkonfiguration gestartet werden.
-          </p>
-          <div className="row">
-            <Button variant="primary" onClick={() => onStart(def.defaultConfig)}>
-              Mit Standard starten
-            </Button>
-            <Button variant="secondary" onClick={onCancel}>
-              Abbrechen
-            </Button>
-          </div>
+      </Card>
+    );
+  }
+
+  // Fertige Module ohne eigenen Editor: neutral mit Standardkonfiguration starten.
+  // Platzhalter: gleicher Ablauf, aber als "in Vorbereitung" gekennzeichnet.
+  return (
+    <Card panel>
+      <div className="stack stack-4">
+        <h2 className="h2">{def.title}</h2>
+        <p className="muted">
+          {ready
+            ? 'Bereit. Mit dem Start beginnt die Sammelphase; die Aufloesung gibst du anschliessend frei.'
+            : 'Dieses Modul ist noch ein Platzhalter (TODO). Es kann zu Demonstrationszwecken mit Standardkonfiguration gestartet werden.'}
+        </p>
+        <div className="row">
+          <Button variant="primary" onClick={() => onStart(def.defaultConfig)}>
+            {ready ? 'Modul starten' : 'Mit Standard starten'}
+          </Button>
+          <Button variant="secondary" onClick={onCancel}>
+            Abbrechen
+          </Button>
         </div>
-      )}
+      </div>
     </Card>
   );
 }
@@ -226,6 +237,7 @@ function ActiveModule({
   config,
   phase,
   aggregate,
+  tally,
   submissionCount,
   participantCount,
   onReveal,
@@ -236,6 +248,7 @@ function ActiveModule({
   config: unknown;
   phase: Phase;
   aggregate: unknown;
+  tally: unknown;
   submissionCount: number;
   participantCount: number;
   onReveal: () => void;
@@ -257,6 +270,7 @@ function ActiveModule({
         config={config}
         phase={phase}
         aggregate={aggregate}
+        tally={tally}
         submissionCount={submissionCount}
         participantCount={participantCount}
         onReveal={onReveal}

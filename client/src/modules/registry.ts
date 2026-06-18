@@ -10,10 +10,12 @@
 
 import type { AnyModuleDefinition } from './types';
 import { livePollModule } from './livePoll';
+import { promptLoggerModule } from './promptLogger';
 import { placeholderModules } from './placeholders';
 
 export const modules: AnyModuleDefinition[] = [
   livePollModule,
+  promptLoggerModule,
   ...placeholderModules,
 ];
 

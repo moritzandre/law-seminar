@@ -32,6 +32,11 @@ export interface TrainerViewProps<Config = unknown, Aggregate = unknown> {
   phase: Phase;
   /** Aggregat (nach Reveal); davor null. */
   aggregate: Aggregate | null;
+  /**
+   * Nicht-sensible Live-Auswertung waehrend collecting (modul-spezifisch, nur
+   * Zahlen/Metadaten). Vor jeder Einsendung null.
+   */
+  tally: unknown;
   /** Anzahl bislang eingegangener Einsendungen. */
   submissionCount: number;
   /** Aktuelle Teilnehmerzahl im Raum. */

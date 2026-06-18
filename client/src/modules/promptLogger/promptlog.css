@@ -1,0 +1,45 @@
+/* Styles fuer den Prompt-Logger (Liste der Einsendungen). */
+
+.promptlog-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.promptlog-entry {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  padding: var(--sp-4);
+}
+
+.promptlog-prompt {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-13);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text);
+}
+
+.promptlog-result {
+  margin: 0;
+}
+
+.promptlog-citation {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  padding-top: var(--sp-2);
+  border-top: 1px dashed var(--border);
+}
+
+.promptlog-citation-text {
+  font-family: var(--font-mono);
+  font-size: var(--fs-13);
+}
