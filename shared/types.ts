@@ -118,6 +118,57 @@ export interface EstimateAggregate {
 }
 
 /* ---------------------------------------------------------------------------
+ * Gemeinsames Sortier-Muster (Drag & Drop) - Basis fuer mehrere Module
+ * (Daten-Treppe, Drei-Ebenen-Sorter, Risiko-Ampel).
+ * ------------------------------------------------------------------------- */
+
+/** Eine zuzuordnende Karte. */
+export interface SortItem {
+  id: string;
+  label: string;
+}
+
+/** Ein Zielfeld/Stufe, in das Karten gelegt werden. */
+export interface SortSlot {
+  id: string;
+  label: string;
+  /** Kurzer erklaerender Zusatz unter dem Feld-Titel. */
+  hint?: string;
+}
+
+export interface SortConfig {
+  prompt: string;
+  items: SortItem[];
+  slots: SortSlot[];
+  /** Korrekte Zuordnung: itemId -> slotId. */
+  solution: Record<string, string>;
+  /** Kurze Begruendung je Karte (wird nach der Aufloesung gezeigt). */
+  justifications: Record<string, string>;
+}
+
+/** Was eine teilnehmende Person sendet: ihre Zuordnung itemId -> slotId. */
+export interface SortSubmission {
+  assignment: Record<string, string>;
+}
+
+export interface SortItemResult {
+  id: string;
+  label: string;
+  correctSlotId: string;
+  /** Anzahl Teilnehmender, die diese Karte korrekt zugeordnet haben. */
+  correctCount: number;
+  /** Verteilung der Zuordnungen: slotId -> Anzahl. */
+  distribution: Record<string, number>;
+}
+
+export interface SortAggregate {
+  count: number;
+  /** Mittlere Trefferquote ueber alle Karten (0..1). */
+  meanCorrect: number;
+  items: SortItemResult[];
+}
+
+/* ---------------------------------------------------------------------------
  * Socket.IO Event-Vertraege
  * ------------------------------------------------------------------------- */
 

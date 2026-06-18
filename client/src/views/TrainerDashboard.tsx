@@ -25,6 +25,9 @@ const READY_MODULE_IDS = new Set([
   'prompt-logger',
   'architecture-map',
   'estimate-bracket',
+  'data-staircase',
+  'three-level-sorter',
+  'risk-traffic-light',
 ]);
 
 export function TrainerDashboard() {

@@ -1,0 +1,192 @@
+/* Styles fuer das wiederverwendbare Sortier-Muster. */
+
+.sorter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+/* Ablege-Leiste (Auswahl-Modus) */
+.sorter-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-control);
+}
+.sorter-toolbar .btn {
+  padding: 6px 12px;
+}
+
+/* Pool + Slots */
+.sorter-pool {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-control);
+}
+.sorter-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--sp-3);
+}
+.sorter-slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  min-height: 96px;
+}
+.sorter-slot-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border);
+}
+.sorter-slot-title {
+  font-weight: 600;
+}
+.sorter-droppable {
+  border-color: var(--accent);
+}
+
+.sorter-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-content: flex-start;
+}
+
+/* Karten */
+.sortcard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 100%;
+}
+.sortcard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-15);
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  cursor: grab;
+  transition:
+    border-color var(--motion),
+    background var(--motion);
+}
+.sortcard-btn:disabled {
+  cursor: default;
+}
+.sortcard-btn:hover:not(:disabled) {
+  border-color: var(--muted);
+}
+.sortcard-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.sortcard-selected .sortcard-btn {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Aufloesung */
+.sortcard-mark {
+  font-weight: 700;
+}
+.sortcard-correct .sortcard-btn {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--border));
+  background: color-mix(in srgb, var(--success) 10%, var(--bg));
+}
+.sortcard-correct .sortcard-mark {
+  color: var(--success);
+}
+.sortcard-wrong .sortcard-btn {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  background: color-mix(in srgb, var(--danger) 10%, var(--bg));
+}
+.sortcard-wrong .sortcard-mark {
+  color: var(--danger);
+}
+.sortcard-correct-slot {
+  font-size: var(--fs-13);
+  color: var(--danger);
+}
+.sortcard-just {
+  max-width: 280px;
+}
+
+/* --- Aggregierte Auswertung (SortResults) --- */
+.sortresult {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+}
+.sortresult-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+.sortresult-label {
+  font-weight: 500;
+}
+.sortresult-rate {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sortresult-dist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: var(--sp-1);
+}
+.sortresult-distrow {
+  display: grid;
+  grid-template-columns: 96px 1fr 28px;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.sortresult-distlabel {
+  text-align: right;
+}
+.sortresult-track {
+  height: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sortresult-fill {
+  display: block;
+  height: 100%;
+  background: var(--muted);
+  border-radius: 999px;
+}
+.sortresult-fill-correct {
+  background: var(--success);
+}
+.sortresult-distn {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

@@ -13,6 +13,11 @@ import { livePollModule } from './livePoll';
 import { promptLoggerModule } from './promptLogger';
 import { architectureMapModule } from './architectureMap';
 import { estimateBracketModule } from './estimateBracket';
+import {
+  dataStaircaseModule,
+  riskTrafficLightModule,
+  threeLevelSorterModule,
+} from './sortable';
 import { placeholderModules } from './placeholders';
 
 export const modules: AnyModuleDefinition[] = [
@@ -20,6 +25,9 @@ export const modules: AnyModuleDefinition[] = [
   promptLoggerModule,
   architectureMapModule,
   estimateBracketModule,
+  dataStaircaseModule,
+  threeLevelSorterModule,
+  riskTrafficLightModule,
   ...placeholderModules,
 ];
 

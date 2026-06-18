@@ -22,6 +22,9 @@ import type {
   PromptLogConfig,
   PromptLogSubmission,
   PromptLogTally,
+  SortAggregate,
+  SortConfig,
+  SortSubmission,
 } from './types';
 
 /**
@@ -194,6 +197,160 @@ export const estimateBracketLogic: ModuleLogic<
 };
 
 /* ---------------------------------------------------------------------------
+ * Gemeinsames Sortier-Muster: aggregate() + drei Module mit eigenem Inhalt.
+ *
+ * Alle drei Module teilen sich dieselbe Aggregation (Trefferquote je Karte +
+ * mittlere Trefferquote). Sie unterscheiden sich nur in ihrer defaultConfig.
+ * ------------------------------------------------------------------------- */
+
+/** Trefferquoten-Aggregation fuer alle Sortier-Module. */
+export function sortAggregate(
+  submissions: SortSubmission[],
+  config: SortConfig,
+): SortAggregate {
+  const items = config.items.map((it) => {
+    const correctSlotId = config.solution[it.id];
+    const distribution: Record<string, number> = {};
+    let correctCount = 0;
+    for (const sub of submissions) {
+      const placed = sub.assignment?.[it.id];
+      if (!placed) continue;
+      distribution[placed] = (distribution[placed] ?? 0) + 1;
+      if (placed === correctSlotId) correctCount += 1;
+    }
+    return { id: it.id, label: it.label, correctSlotId, correctCount, distribution };
+  });
+  const count = submissions.length;
+  const meanCorrect =
+    count > 0 && items.length > 0
+      ? items.reduce((sum, it) => sum + it.correctCount / count, 0) /
+        items.length
+      : 0;
+  return { count, meanCorrect, items };
+}
+
+/** Kleiner Helfer: baut eine Sortier-Logik aus Inhalt. */
+function sortModuleLogic(
+  id: string,
+  title: string,
+  block: number,
+  defaultConfig: SortConfig,
+): ModuleLogic<SortConfig, SortSubmission, SortAggregate> {
+  return { id, title, block, kind: 'poll', defaultConfig, aggregate: sortAggregate };
+}
+
+/* --- Daten-Treppe (Block 1): Karten auf vier Verarbeitungsstufen ------- */
+export const dataStaircaseLogic = sortModuleLogic(
+  'data-staircase',
+  'Daten-Treppe',
+  1,
+  {
+    prompt:
+      'Ordne jede Karte der Stufe zu, auf der diese Information entsteht - von der reinen Messung bis zur Bewertung.',
+    items: [
+      { id: 'sensor', label: 'Sensorwert' },
+      { id: 'gps', label: 'GPS' },
+      { id: 'avgspeed', label: 'Durchschnittsgeschwindigkeit' },
+      { id: 'drivescore', label: 'Fahrstil-Score' },
+      { id: 'oprisk', label: 'OP-Risiko' },
+    ],
+    slots: [
+      { id: 'raw', label: 'Rohdaten', hint: 'Unmittelbar gemessen' },
+      { id: 'transformed', label: 'Transformiert', hint: 'Umgerechnet/aggregiert' },
+      { id: 'derived', label: 'Abgeleitet', hint: 'Aus anderem berechnet' },
+      { id: 'assessment', label: 'Bewertung', hint: 'Wertendes Urteil' },
+    ],
+    solution: {
+      sensor: 'raw',
+      gps: 'raw',
+      avgspeed: 'transformed',
+      drivescore: 'derived',
+      oprisk: 'assessment',
+    },
+    justifications: {
+      sensor: 'Unmittelbar gemessener Wert - noch ohne jede Verarbeitung.',
+      gps: 'Direkt erfasste Positionsdaten; eine Rohmessung.',
+      avgspeed:
+        'Aus Position und Zeit berechnet - eine Transformation der Rohdaten.',
+      drivescore:
+        'Aus mehreren transformierten Groessen abgeleiteter Indikator.',
+      oprisk: 'Eine wertende Einschaetzung - keine Messung, sondern ein Urteil.',
+    },
+  },
+);
+
+/* --- Drei-Ebenen-Sorter (Block 1): Antworten nach Belastbarkeit -------- */
+export const threeLevelSorterLogic = sortModuleLogic(
+  'three-level-sorter',
+  'Drei-Ebenen-Sorter',
+  1,
+  {
+    prompt:
+      'Ordne jede Antwort der passenden Ebene zu: nur plausibel, inhaltlich korrekt oder belastbar (richtig und nachpruefbar belegt).',
+    items: [
+      { id: 'a', label: 'A: Fluessig formuliert, ohne Fundstelle, sachlich falsch' },
+      { id: 'b', label: 'B: Sachlich richtig, aber ohne Quelle oder Begruendung' },
+      { id: 'c', label: 'C: Richtig und mit nachpruefbarer Fundstelle belegt' },
+    ],
+    slots: [
+      { id: 'plausible', label: 'Plausibel', hint: 'Klingt ueberzeugend' },
+      { id: 'correct', label: 'Korrekt', hint: 'Inhaltlich richtig' },
+      { id: 'robust', label: 'Belastbar', hint: 'Richtig + belegt' },
+    ],
+    solution: { a: 'plausible', b: 'correct', c: 'robust' },
+    justifications: {
+      a: 'Sprachlich ueberzeugend, aber inhaltlich falsch - nur plausibel.',
+      b: 'Inhaltlich richtig, doch ohne Beleg nicht ueberpruefbar - korrekt, aber nicht belastbar.',
+      c: 'Richtig UND mit nachpruefbarer Fundstelle - belastbar.',
+    },
+  },
+);
+
+/* --- Risiko-Ampel (Block 5): Assistenten-Aktionen nach Risiko ---------- */
+export const riskTrafficLightLogic = sortModuleLogic(
+  'risk-traffic-light',
+  'Risiko-Ampel',
+  5,
+  {
+    prompt:
+      'Ordne jede Aktion eines KI-Assistenten nach Risiko ein: gruen (unbedenklich), gelb (nur mit Pruefung), rot (kritisch).',
+    items: [
+      { id: 'summarize', label: 'Fasst einen vom Nutzer bereitgestellten Text zusammen' },
+      { id: 'outline', label: 'Erstellt eine Gliederung fuer einen Schriftsatz' },
+      { id: 'draft', label: 'Entwirft eine Vertragsklausel, die anwaltlich geprueft wird' },
+      { id: 'research', label: 'Recherchiert Rechtsprechung, deren Fundstellen geprueft werden' },
+      { id: 'filing', label: 'Reicht eine Fristberechnung ungeprueft direkt bei Gericht ein' },
+      { id: 'advice', label: 'Gibt verbindlichen Rechtsrat ohne menschliche Kontrolle' },
+    ],
+    slots: [
+      { id: 'green', label: 'Gruen', hint: 'Unbedenklich' },
+      { id: 'yellow', label: 'Gelb', hint: 'Nur mit Pruefung' },
+      { id: 'red', label: 'Rot', hint: 'Kritisch' },
+    ],
+    solution: {
+      summarize: 'green',
+      outline: 'green',
+      draft: 'yellow',
+      research: 'yellow',
+      filing: 'red',
+      advice: 'red',
+    },
+    justifications: {
+      summarize:
+        'Arbeitet nur am bereitgestellten Material - geringe eigene Aussagekraft.',
+      outline: 'Reine Struktur-/Organisationshilfe ohne rechtliche Festlegung.',
+      draft: 'Inhaltlicher Entwurf - tragbar nur mit anschliessender Pruefung.',
+      research:
+        'Nuetzlich, aber Fundstellen muessen zwingend verifiziert werden.',
+      filing:
+        'Ungeprueft mit unmittelbarer Aussenwirkung bei Gericht - kritisch.',
+      advice:
+        'Verbindliche Beratung ohne menschliche Kontrolle - klar kritisch.',
+    },
+  },
+);
+
+/* ---------------------------------------------------------------------------
  * Platzhalter-Module (nur registriert, Logik folgt spaeter -> TODO)
  *
  * Jeder Platzhalter ist bereits korrekt typisiert und in der Registry sichtbar,
@@ -221,12 +378,6 @@ function placeholder(
 }
 
 export const placeholderLogic: ModuleLogic[] = [
-  // TODO: Daten-Treppe - Reihenfolge/Stufen einordnen.
-  placeholder('data-staircase', 'Daten-Treppe', 2, 'presentation'),
-  // TODO: Drei-Ebenen-Sorter - Aussagen drei Ebenen zuordnen.
-  placeholder('three-level-sorter', 'Drei-Ebenen-Sorter', 2, 'poll'),
-  // TODO: Risiko-Ampel - Risiken in rot/gelb/gruen bewerten.
-  placeholder('risk-traffic-light', 'Risiko-Ampel', 3, 'poll'),
   // TODO: Forensik-Marker - Stellen in einem Text markieren.
   placeholder('forensics-marker', 'Forensik-Marker', 3, 'presentation'),
 ];
@@ -241,6 +392,9 @@ export const moduleLogicRegistry: ModuleLogic[] = [
   promptLoggerLogic,
   architectureMapLogic,
   estimateBracketLogic,
+  dataStaircaseLogic,
+  threeLevelSorterLogic,
+  riskTrafficLightLogic,
   ...placeholderLogic,
 ];
 

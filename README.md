@@ -56,9 +56,9 @@ eintragen.
 | 1     | **Prompt-Logger** (`poll`)         | **vollständig**   |
 | 2     | **Architektur-Karte: Wo ist die Wahrheit?** (`presentation`) | **vollständig** |
 | 3     | **Schätz-Klammer** (`poll`, 2 Runden) | **vollständig** |
-| 2     | Daten-Treppe                       | Platzhalter (TODO)|
-| 2     | Drei-Ebenen-Sorter                 | Platzhalter (TODO)|
-| 3     | Risiko-Ampel                       | Platzhalter (TODO)|
+| 1     | **Daten-Treppe** (`poll`, Drag&Drop) | **vollständig** |
+| 1     | **Drei-Ebenen-Sorter** (`poll`, Drag&Drop) | **vollständig** |
+| 5     | **Risiko-Ampel** (`poll`, Drag&Drop) | **vollständig** |
 | 3     | Forensik-Marker                    | Platzhalter (TODO)|
 
 > Die „Architektur-Karte" übernimmt Inhalt und Interaktionslogik (Stationen,
@@ -66,6 +66,12 @@ eintragen.
 > bereinigte Referenz), umgesetzt im hier definierten hellen Design-System. Sie
 > ist ein Präsentationsmodul ohne Einsendungen: Sie läuft am Beamer, und
 > Teilnehmende können sie optional parallel auf ihren Geräten erkunden.
+
+> **Daten-Treppe**, **Drei-Ebenen-Sorter** und **Risiko-Ampel** teilen sich ein
+> wiederverwendbares Sortier-/Drag-&-Drop-Muster (`client/src/modules/sortable/`).
+> Bedienung wahlweise per Antippen (Karte wählen → Feld wählen, tastaturbedienbar)
+> oder Ziehen. Sie laufen trainergesteuert (`poll`): Zuordnung verborgen bis zur
+> Freigabe, danach Auflösung mit Begründung je Karte und aggregierter Trefferquote.
 
 ---
 
