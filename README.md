@@ -54,16 +54,18 @@ eintragen.
 | ----- | ---------------------------------- | ----------------- |
 | 1     | **Live-Abstimmung** (`poll`)       | **vollständig**   |
 | 1     | **Prompt-Logger** (`poll`)         | **vollständig**   |
-| 1     | Architektur-Karte: Wo ist die Wahrheit? | Platzhalter (TODO)|
+| 2     | **Architektur-Karte: Wo ist die Wahrheit?** (`presentation`) | **vollständig** |
 | 2     | Schätz-Klammer                     | Platzhalter (TODO)|
 | 2     | Daten-Treppe                       | Platzhalter (TODO)|
 | 2     | Drei-Ebenen-Sorter                 | Platzhalter (TODO)|
 | 3     | Risiko-Ampel                       | Platzhalter (TODO)|
 | 3     | Forensik-Marker                    | Platzhalter (TODO)|
 
-> Die „Architektur-Karte" soll später Inhalt und Interaktionslogik aus
-> `seminar-tool-prototyp.html` übernehmen (Struktur-/Inhaltsreferenz), aber im
-> hier definierten Design-System. Die Referenzdatei liegt derzeit noch nicht vor.
+> Die „Architektur-Karte" übernimmt Inhalt und Interaktionslogik (Stationen,
+> Erkundungs-/Suchmodus, Auflösung) aus `seminar-tool-prototyp.html` (im Repo als
+> bereinigte Referenz), umgesetzt im hier definierten hellen Design-System. Sie
+> ist ein Präsentationsmodul ohne Einsendungen: Sie läuft am Beamer, und
+> Teilnehmende können sie optional parallel auf ihren Geräten erkunden.
 
 ---
 

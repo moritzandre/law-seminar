@@ -19,7 +19,11 @@ import { PollSetup } from './PollSetup';
 import './dashboard.css';
 
 /** Modul-IDs, die bereits vollstaendig implementiert sind. */
-const READY_MODULE_IDS = new Set(['live-poll', 'prompt-logger']);
+const READY_MODULE_IDS = new Set([
+  'live-poll',
+  'prompt-logger',
+  'architecture-map',
+]);
 
 export function TrainerDashboard() {
   const room = useTrainer();
@@ -213,9 +217,11 @@ function SetupArea({
       <div className="stack stack-4">
         <h2 className="h2">{def.title}</h2>
         <p className="muted">
-          {ready
-            ? 'Bereit. Mit dem Start beginnt die Sammelphase; die Aufloesung gibst du anschliessend frei.'
-            : 'Dieses Modul ist noch ein Platzhalter (TODO). Es kann zu Demonstrationszwecken mit Standardkonfiguration gestartet werden.'}
+          {!ready
+            ? 'Dieses Modul ist noch ein Platzhalter (TODO). Es kann zu Demonstrationszwecken mit Standardkonfiguration gestartet werden.'
+            : def.kind === 'presentation'
+              ? 'Präsentationsmodul. Mit dem Start erscheint die Karte hier am Beamer; Teilnehmende können optional parallel auf ihren Geräten erkunden.'
+              : 'Bereit. Mit dem Start beginnt die Sammelphase; die Auflösung gibst du anschließend frei.'}
         </p>
         <div className="row">
           <Button variant="primary" onClick={() => onStart(def.defaultConfig)}>
@@ -263,7 +269,7 @@ function ActiveModule({
     <Card panel className="stack stack-6">
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h2 className="h2">{def.title}</h2>
-        <PhaseBadge phase={phase} />
+        <PhaseBadge phase={phase} kind={def.kind} />
       </div>
 
       <View

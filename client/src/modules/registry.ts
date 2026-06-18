@@ -11,11 +11,13 @@
 import type { AnyModuleDefinition } from './types';
 import { livePollModule } from './livePoll';
 import { promptLoggerModule } from './promptLogger';
+import { architectureMapModule } from './architectureMap';
 import { placeholderModules } from './placeholders';
 
 export const modules: AnyModuleDefinition[] = [
   livePollModule,
   promptLoggerModule,
+  architectureMapModule,
   ...placeholderModules,
 ];
 

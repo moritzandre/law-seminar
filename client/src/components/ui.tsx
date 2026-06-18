@@ -10,7 +10,7 @@ import type {
   HTMLAttributes,
   ReactNode,
 } from 'react';
-import type { Phase } from '@shared/types';
+import type { ModuleKind, Phase } from '@shared/types';
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger';
 
@@ -58,12 +58,16 @@ export function Card({ panel, className = '', children, ...rest }: CardProps) {
   );
 }
 
-/** Status-Badge fuer die aktuelle Phase. */
-export function PhaseBadge({ phase }: { phase: Phase }) {
+/** Status-Badge fuer die aktuelle Phase. Bei Praesentationsmodulen passende Texte. */
+export function PhaseBadge({ phase, kind }: { phase: Phase; kind?: ModuleKind }) {
+  const presentation = kind === 'presentation';
   const map: Record<Phase, { label: string; cls: string }> = {
     idle: { label: 'Bereit', cls: 'badge-idle' },
-    collecting: { label: 'Sammelt Antworten', cls: 'badge-collecting' },
-    revealed: { label: 'Aufgeloest', cls: 'badge-revealed' },
+    collecting: {
+      label: presentation ? 'Läuft' : 'Sammelt Antworten',
+      cls: 'badge-collecting',
+    },
+    revealed: { label: 'Aufgelöst', cls: 'badge-revealed' },
   };
   const { label, cls } = map[phase];
   return (

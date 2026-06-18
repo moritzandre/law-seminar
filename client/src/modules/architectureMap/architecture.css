@@ -1,0 +1,170 @@
+/* Styles der Architektur-Karte - im hellen Design-System (Tokens). */
+
+/* --- Modus-Umschalter (segmentiert) --- */
+.am-modes {
+  display: inline-flex;
+  gap: var(--sp-1);
+  padding: var(--sp-1);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  align-self: flex-start;
+}
+.am-mode {
+  padding: 8px 16px;
+  font-size: var(--fs-15);
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background var(--motion),
+    color var(--motion);
+}
+.am-mode:hover {
+  color: var(--text);
+}
+.am-mode-active {
+  color: var(--accent-contrast);
+  background: var(--accent);
+}
+.am-mode:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- Auftrag/Hinweis --- */
+.am-prompt {
+  margin: 0;
+  color: var(--text);
+}
+
+/* --- Pipeline --- */
+.am-pipe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: stretch;
+}
+.am-pipe-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.am-station {
+  position: relative;
+  min-width: 116px;
+  flex: 1 1 116px;
+  max-width: 150px;
+  padding: var(--sp-4) var(--sp-2);
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  transition:
+    transform var(--motion),
+    border-color var(--motion),
+    background var(--motion);
+}
+.am-station:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+.am-station:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.am-station-visited {
+  border-color: var(--accent-border);
+}
+.am-station-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.am-check {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  color: var(--accent);
+  font-size: var(--fs-13);
+}
+.am-ico {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: var(--sp-1);
+}
+.am-nm {
+  font-size: var(--fs-13);
+  font-weight: 600;
+}
+.am-arrow {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+/* --- Detailbereich --- */
+.am-detail {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--sp-4);
+  min-height: 120px;
+}
+.am-cards {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.am-card {
+  flex: 1 1 240px;
+  border-radius: var(--radius-control);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-15);
+}
+.am-card-label {
+  font-size: var(--fs-13);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: var(--sp-1);
+}
+/* "Was passiert" - informativ (Akzent). */
+.am-card-is {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+}
+/* "Was NICHT passiert" - der kritische Punkt (gedaempftes Rot). */
+.am-card-isnt {
+  background: color-mix(in srgb, var(--danger) 8%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border));
+}
+
+/* --- Fußzeile --- */
+.am-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+/* --- Befund (ohne Verlauf, nur dezente Akzentflaeche) --- */
+.am-verdict {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-card);
+  padding: var(--sp-4);
+}
+
+/* Auf schmalen Schirmen Pfeile ausblenden. */
+@media (max-width: 560px) {
+  .am-arrow {
+    display: none;
+  }
+  .am-station {
+    min-width: 46%;
+  }
+}

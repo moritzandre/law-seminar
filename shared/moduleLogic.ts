@@ -129,6 +129,26 @@ export const promptLoggerLogic: ModuleLogic<
 };
 
 /* ---------------------------------------------------------------------------
+ * Modul: Architektur-Karte "Wo ist die Wahrheit?" (Block 2)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Praesentationsmodul: laeuft am Beamer (und optional parallel auf den Geraeten),
+ * sammelt KEINE Einsendungen und aggregiert daher nichts. Die gesamte
+ * Interaktion (Stationen, Modi, Aufloesung) ist clientseitig und lokal.
+ */
+export const architectureMapLogic: ModuleLogic = {
+  id: 'architecture-map',
+  title: 'Architektur-Karte: Wo ist die Wahrheit?',
+  block: 2,
+  kind: 'presentation',
+  defaultConfig: {},
+  aggregate() {
+    return null;
+  },
+};
+
+/* ---------------------------------------------------------------------------
  * Platzhalter-Module (nur registriert, Logik folgt spaeter -> TODO)
  *
  * Jeder Platzhalter ist bereits korrekt typisiert und in der Registry sichtbar,
@@ -156,13 +176,6 @@ function placeholder(
 }
 
 export const placeholderLogic: ModuleLogic[] = [
-  // TODO: Inhalt/Interaktion aus seminar-tool-prototyp.html uebernehmen.
-  placeholder(
-    'architecture-map',
-    'Architektur-Karte: Wo ist die Wahrheit?',
-    1,
-    'presentation',
-  ),
   // TODO: Schaetz-Klammer - Schaetzwerte sammeln, Spannweite/Median zeigen.
   placeholder('estimate-bracket', 'Schaetz-Klammer', 2, 'poll'),
   // TODO: Daten-Treppe - Reihenfolge/Stufen einordnen.
@@ -183,6 +196,7 @@ export const placeholderLogic: ModuleLogic[] = [
 export const moduleLogicRegistry: ModuleLogic[] = [
   livePollLogic,
   promptLoggerLogic,
+  architectureMapLogic,
   ...placeholderLogic,
 ];
 

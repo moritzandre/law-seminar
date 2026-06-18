@@ -118,7 +118,7 @@ export function ParticipantPage({ initialCode = '' }: ParticipantPageProps) {
     <div className="stack stack-4" style={{ maxWidth: 560, margin: '0 auto' }}>
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <span className="small muted">{def.title}</span>
-        <PhaseBadge phase={room.module.phase} />
+        <PhaseBadge phase={room.module.phase} kind={def.kind} />
       </div>
       <Card>
         <View
