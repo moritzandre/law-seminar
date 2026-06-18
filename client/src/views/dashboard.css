@@ -1,0 +1,59 @@
+/* Layout-Styles fuer das Trainer-Dashboard. */
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+/* Auf schmalen Schirmen (Handy) untereinander. */
+@media (max-width: 760px) {
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dash-aside {
+  position: sticky;
+  top: var(--sp-6);
+}
+
+.module-list {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.module-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  text-align: left;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition:
+    border-color var(--motion),
+    background var(--motion);
+}
+.module-item:hover {
+  border-color: var(--muted);
+}
+.module-item-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.module-title {
+  font-weight: 500;
+}
+
+.module-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}

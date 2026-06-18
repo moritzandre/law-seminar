@@ -1,0 +1,82 @@
+/*
+ * tokens.css
+ * -----------------------------------------------------------------------------
+ * Design-System als CSS-Variablen. Hell ist Standard; der Dark-Mode wird ueber
+ * [data-theme="dark"] am <html>-Element aktiviert (Umschalter oben rechts).
+ *
+ * Prinzipien: hell, ruhig, viel Weissraum, duenne 1px-Linien, kaum Schatten,
+ * keine Verlaeufe. 4er-Raster fuer Abstaende.
+ */
+
+:root {
+  /* --- Farben (hell) --- */
+  --bg: #ffffff;
+  --surface: #f7f8fa;
+  --border: #e6e8ec;
+  --text: #11151a;
+  --muted: #6b7280;
+  --accent: #2f6fed;
+  --accent-contrast: #ffffff;
+  --success: #18794e;
+  --warning: #b45309;
+  --danger: #b42318;
+
+  /* Dezente Flaechen abgeleitet vom Akzent (fuer Hover/aktive Zustaende) */
+  --accent-soft: rgba(47, 111, 237, 0.08);
+  --accent-border: rgba(47, 111, 237, 0.35);
+
+  /* --- Typografie --- */
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono',
+    Consolas, 'Liberation Mono', monospace;
+
+  --fs-13: 13px;
+  --fs-15: 15px;
+  --fs-17: 17px;
+  --fs-22: 22px;
+  --fs-28: 28px;
+  --lh: 1.5;
+
+  /* --- Abstaende (4er-Raster) --- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-12: 48px;
+
+  /* --- Radius --- */
+  --radius-control: 8px; /* Buttons / Felder */
+  --radius-card: 12px; /* Karten */
+
+  /* --- Schatten (sehr dezent, nur Dashboard-Panels) --- */
+  --shadow-panel: 0 1px 2px rgba(17, 21, 26, 0.04),
+    0 1px 3px rgba(17, 21, 26, 0.06);
+
+  /* --- Bewegung --- */
+  --motion: 140ms ease;
+
+  /* --- Layout --- */
+  --maxw: 1040px;
+}
+
+[data-theme='dark'] {
+  --bg: #0e1116;
+  --surface: #161b22;
+  --border: #272d36;
+  --text: #e6e8ec;
+  --muted: #9aa4b2;
+  --accent: #5b8dff;
+  --accent-contrast: #0e1116;
+  --success: #3fb27f;
+  --warning: #e0a042;
+  --danger: #e5675a;
+
+  --accent-soft: rgba(91, 141, 255, 0.14);
+  --accent-border: rgba(91, 141, 255, 0.45);
+
+  --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.4);
+}

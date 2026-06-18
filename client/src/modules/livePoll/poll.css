@@ -1,0 +1,48 @@
+/* Styles fuer die Live-Abstimmung (Teilnehmer-Optionen + Trainer-Vorschau). */
+
+.poll-option {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-4);
+  font-size: var(--fs-17);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition:
+    border-color var(--motion),
+    background var(--motion);
+}
+
+.poll-option:hover {
+  border-color: var(--muted);
+}
+
+.poll-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.poll-option-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.poll-marker {
+  color: var(--accent);
+  font-size: var(--fs-17);
+  line-height: 1;
+}
+
+.poll-preview {
+  margin: 0;
+  padding-left: var(--sp-6);
+  color: var(--text);
+}
+.poll-preview li {
+  margin: var(--sp-1) 0;
+}
