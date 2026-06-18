@@ -11,6 +11,9 @@
  */
 
 import type {
+  EstimateAggregate,
+  EstimateConfig,
+  EstimateSubmission,
   ModuleKind,
   PollAggregate,
   PollConfig,
@@ -149,6 +152,48 @@ export const architectureMapLogic: ModuleLogic = {
 };
 
 /* ---------------------------------------------------------------------------
+ * Modul: Schaetz-Klammer (Einleitung -> Block 3 -> Abschluss)
+ * ------------------------------------------------------------------------- */
+
+/** Begrenzt einen Wert auf das ganzzahlige Intervall [0, 10]. */
+function clampEstimate(v: number): number {
+  if (!Number.isFinite(v)) return 0;
+  return Math.min(10, Math.max(0, Math.round(v)));
+}
+
+export const estimateBracketLogic: ModuleLogic<
+  EstimateConfig,
+  EstimateSubmission,
+  EstimateAggregate
+> = {
+  id: 'estimate-bracket',
+  title: 'Schaetz-Klammer',
+  block: 3,
+  kind: 'poll',
+  defaultConfig: {
+    round: 1,
+    question:
+      'Bei wie vielen von zehn Rechtsfragen liegt ein KI-Tool daneben?',
+  },
+  aggregate(submissions, config) {
+    const histogram = new Array(11).fill(0) as number[];
+    let sum = 0;
+    for (const s of submissions) {
+      const v = clampEstimate(s.value);
+      histogram[v] += 1;
+      sum += v;
+    }
+    const count = submissions.length;
+    return {
+      round: config.round,
+      count,
+      mean: count > 0 ? sum / count : 0,
+      histogram,
+    };
+  },
+};
+
+/* ---------------------------------------------------------------------------
  * Platzhalter-Module (nur registriert, Logik folgt spaeter -> TODO)
  *
  * Jeder Platzhalter ist bereits korrekt typisiert und in der Registry sichtbar,
@@ -176,8 +221,6 @@ function placeholder(
 }
 
 export const placeholderLogic: ModuleLogic[] = [
-  // TODO: Schaetz-Klammer - Schaetzwerte sammeln, Spannweite/Median zeigen.
-  placeholder('estimate-bracket', 'Schaetz-Klammer', 2, 'poll'),
   // TODO: Daten-Treppe - Reihenfolge/Stufen einordnen.
   placeholder('data-staircase', 'Daten-Treppe', 2, 'presentation'),
   // TODO: Drei-Ebenen-Sorter - Aussagen drei Ebenen zuordnen.
@@ -197,6 +240,7 @@ export const moduleLogicRegistry: ModuleLogic[] = [
   livePollLogic,
   promptLoggerLogic,
   architectureMapLogic,
+  estimateBracketLogic,
   ...placeholderLogic,
 ];
 

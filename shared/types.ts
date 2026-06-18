@@ -93,6 +93,31 @@ export interface PromptLogTally {
 }
 
 /* ---------------------------------------------------------------------------
+ * Modul: "Schaetz-Klammer" (kind: poll) - Einleitung -> Block 3 -> Abschluss
+ * ------------------------------------------------------------------------- */
+
+export interface EstimateConfig {
+  /** Welche Runde dies ist (1 = Einleitung, 2 = Abschluss, ...). */
+  round: number;
+  /** Frage, die geschaetzt werden soll. */
+  question: string;
+}
+
+/** Eine einzelne Schaetzung: ganze Zahl 0..10. */
+export interface EstimateSubmission {
+  value: number;
+}
+
+export interface EstimateAggregate {
+  round: number;
+  count: number;
+  /** Arithmetisches Mittel der Schaetzungen (0, falls keine). */
+  mean: number;
+  /** Haeufigkeiten je Wert: histogram[v] = Anzahl der Schaetzungen mit Wert v (v = 0..10). */
+  histogram: number[];
+}
+
+/* ---------------------------------------------------------------------------
  * Socket.IO Event-Vertraege
  * ------------------------------------------------------------------------- */
 

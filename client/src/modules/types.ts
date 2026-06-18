@@ -37,6 +37,12 @@ export interface TrainerViewProps<Config = unknown, Aggregate = unknown> {
    * Zahlen/Metadaten). Vor jeder Einsendung null.
    */
   tally: unknown;
+  /**
+   * Aggregate frueherer, in dieser Sitzung bereits aufgeloester Runden desselben
+   * Moduls (inkl. der aktuellen nach Reveal). Fuer Mehrrunden-Module wie die
+   * Schaetz-Klammer (Vorher/Nachher-Vergleich); andere Module ignorieren es.
+   */
+  history: unknown[];
   /** Anzahl bislang eingegangener Einsendungen. */
   submissionCount: number;
   /** Aktuelle Teilnehmerzahl im Raum. */

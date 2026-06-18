@@ -10,11 +10,12 @@
  */
 
 import { useEffect, useState } from 'react';
-import type { PollConfig, Phase } from '@shared/types';
+import type { EstimateConfig, PollConfig, Phase } from '@shared/types';
 import { Button, Card, PhaseBadge } from '../components/ui';
 import { QRCode } from '../components/QRCode';
 import { useTrainer } from '../hooks/useTrainer';
 import { getModule, modulesByBlock } from '../modules/registry';
+import { EstimateSetup } from '../modules/estimateBracket/EstimateSetup';
 import { PollSetup } from './PollSetup';
 import './dashboard.css';
 
@@ -23,6 +24,7 @@ const READY_MODULE_IDS = new Set([
   'live-poll',
   'prompt-logger',
   'architecture-map',
+  'estimate-bracket',
 ]);
 
 export function TrainerDashboard() {
@@ -32,10 +34,30 @@ export function TrainerDashboard() {
   const [draftModuleId, setDraftModuleId] = useState<string | null>(null);
   const [forcePicker, setForcePicker] = useState(false);
 
+  // Aufgeloeste Runden je Modul (fuer Mehrrunden-Vergleich, z. B. Schaetz-Klammer).
+  // Lebt nur in der offenen Dashboard-Sitzung; Raeume sind ohnehin fluechtig.
+  const [rounds, setRounds] = useState<Record<string, unknown[]>>({});
+
   // Wenn ein neues Modul startet, eine ggf. offene Auswahl schliessen.
   useEffect(() => {
     if (room.module) setForcePicker(false);
   }, [room.module]);
+
+  // Eine aufgeloeste Runde archivieren (nur runden-basierte Module; dedupliziert
+  // anhand der Rundennummer, damit Re-Renders nichts doppelt eintragen).
+  useEffect(() => {
+    if (room.module?.phase !== 'revealed' || !room.aggregate) return;
+    const agg = room.aggregate as { round?: number };
+    if (typeof agg.round !== 'number') return;
+    const id = room.module.moduleId;
+    setRounds((prev) => {
+      const list = prev[id] ?? [];
+      if (list.some((a) => (a as { round?: number }).round === agg.round)) {
+        return prev;
+      }
+      return { ...prev, [id]: [...list, room.aggregate] };
+    });
+  }, [room.module?.phase, room.module?.moduleId, room.aggregate]);
 
   /* --- Noch kein Raum: erstellen --------------------------------------- */
   if (!room.code) {
@@ -104,10 +126,14 @@ export function TrainerDashboard() {
           <SetupArea
             moduleId={draftModuleId}
             ready={READY_MODULE_IDS.has(draftModuleId)}
+            roundsForModule={rounds[draftModuleId] ?? []}
             onStart={(config) => {
               room.startModule(draftModuleId, config);
               setDraftModuleId(null);
             }}
+            onResetRounds={() =>
+              setRounds((prev) => ({ ...prev, [draftModuleId]: [] }))
+            }
             onCancel={() => setDraftModuleId(null)}
           />
         )}
@@ -119,6 +145,7 @@ export function TrainerDashboard() {
             phase={room.module.phase}
             aggregate={room.aggregate}
             tally={room.tally}
+            history={rounds[room.module.moduleId] ?? []}
             submissionCount={room.submissionCount}
             participantCount={room.participantCount}
             onReveal={room.reveal}
@@ -186,12 +213,16 @@ function ModulePicker({
 function SetupArea({
   moduleId,
   ready,
+  roundsForModule,
   onStart,
+  onResetRounds,
   onCancel,
 }: {
   moduleId: string;
   ready: boolean;
+  roundsForModule: unknown[];
   onStart: (config: unknown) => void;
+  onResetRounds: () => void;
   onCancel: () => void;
 }) {
   const def = getModule(moduleId);
@@ -204,6 +235,22 @@ function SetupArea({
         <PollSetup
           initialConfig={def.defaultConfig as PollConfig}
           onStart={(config) => onStart(config)}
+          onCancel={onCancel}
+        />
+      </Card>
+    );
+  }
+
+  // Runden-Editor fuer die Schaetz-Klammer (Runde aus History abgeleitet).
+  if (moduleId === 'estimate-bracket') {
+    return (
+      <Card panel>
+        <EstimateSetup
+          initialConfig={def.defaultConfig as EstimateConfig}
+          nextRound={roundsForModule.length + 1}
+          hasHistory={roundsForModule.length > 0}
+          onStart={(config) => onStart(config)}
+          onResetRounds={onResetRounds}
           onCancel={onCancel}
         />
       </Card>
@@ -244,6 +291,7 @@ function ActiveModule({
   phase,
   aggregate,
   tally,
+  history,
   submissionCount,
   participantCount,
   onReveal,
@@ -255,6 +303,7 @@ function ActiveModule({
   phase: Phase;
   aggregate: unknown;
   tally: unknown;
+  history: unknown[];
   submissionCount: number;
   participantCount: number;
   onReveal: () => void;
@@ -277,6 +326,7 @@ function ActiveModule({
         phase={phase}
         aggregate={aggregate}
         tally={tally}
+        history={history}
         submissionCount={submissionCount}
         participantCount={participantCount}
         onReveal={onReveal}

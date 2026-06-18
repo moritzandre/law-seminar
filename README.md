@@ -55,7 +55,7 @@ eintragen.
 | 1     | **Live-Abstimmung** (`poll`)       | **vollständig**   |
 | 1     | **Prompt-Logger** (`poll`)         | **vollständig**   |
 | 2     | **Architektur-Karte: Wo ist die Wahrheit?** (`presentation`) | **vollständig** |
-| 2     | Schätz-Klammer                     | Platzhalter (TODO)|
+| 3     | **Schätz-Klammer** (`poll`, 2 Runden) | **vollständig** |
 | 2     | Daten-Treppe                       | Platzhalter (TODO)|
 | 2     | Drei-Ebenen-Sorter                 | Platzhalter (TODO)|
 | 3     | Risiko-Ampel                       | Platzhalter (TODO)|
